@@ -1,0 +1,206 @@
+.v-custom-heading {
+	display: block;
+	font-family: 'Droid Serif', Georgia, Times, serif;
+	font-weight: normal;
+	font-style: italic;
+	float: none;
+	font-size: 22px;
+	line-height: 32px;
+}
+
+.special_amp {
+	font-family: 'Baskerville', 'Palatino Linotype', 'Palatino', 'Times New Roman', serif;
+	font-style: italic;
+	font-size: 1.3em;
+	line-height: 0.5em;
+	font-weight: normal;
+	color: #28c2e4;
+}
+
+[class^='icon-']:not(.icon-prepend):not(.icon-append):before,
+[class*=' icon-']:not(.icon-prepend):not(.icon-append):before {
+	opacity: 0.9;
+	font-weight: 600 !important;
+}
+
+.bg-custom-1 {
+	background-image: url(../img/mix/j1.jpg);
+	background-size: cover;
+	background-position: 50% 50%;
+	min-height: 31.5rem;
+	margin-bottom: 4.5rem;
+	text-align: left;
+	opacity: 1;
+	overflow: hidden;
+	-moz-transition: opacity 0.8s ease;
+	-o-transition: opacity 0.8s ease;
+	-webkit-transition: opacity 0.8s ease;
+	transition: opacity 0.8s ease;
+	margin: 0 auto;
+	clear: both;
+	position: relative;
+}
+
+.bg-custom-1--overlay {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	opacity: 0.3;
+	display: block;
+	background-image: -webkit-linear-gradient(36deg, #1a8bf0 0, #25292d 100%);
+	background-image: -moz-linear-gradient(36deg, #1a8bf0 0, #25292d 100%);
+	background-image: -o-linear-gradient(36deg, #1a8bf0 0, #25292d 100%);
+	background-image: linear-gradient(36deg, #1a8bf0 0, #25292d 100%);
+}
+
+.v-testimonials--head {
+	display: block;
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 20px;
+}
+
+.v-testimonials--head img {
+	width: 60px;
+	border-radius: 50%;
+	float: left;
+	margin-right: 18px;
+}
+
+.v-testimonials--name {
+	float: left;
+	margin-top: 8px;
+}
+
+.v-testimonials--name p {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 500;
+	font-family: 'Museo500Regular', Arial, Helvetica, Tahoma, sans-serif;
+}
+
+.v-testimonials--body {
+	display: block;
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 2px;
+}
+
+.v-testimonials--body p {
+	font-size: 14px;
+	line-height: 1.7;
+}
+
+.v-testimonials--footer {
+	display: block;
+	width: 100%;
+	overflow: hidden;
+}
+
+.v-testimonials--stars,
+.v-testimonials--footer i {
+	font-size: 16px;
+	color: #f1c346;
+}
+
+.v-testimonials--sub-heading {
+	color: #2484da;
+}
+
+.v-testimonials-v2 .v-testimonials-v2--body {
+	overflow: hidden;
+}
+
+.v-testimonials-v2 img {
+	width: 120px;
+	margin-right: 30px;
+}
+
+.shadow1,
+.page-header .breadcrumb > li {
+	text-shadow: 2px 2px 2px #000;
+}
+
+.shadow2 {
+	text-shadow: 0px 0px 6px #000;
+}
+
+.spark_screenshot {
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+.spark_screenshot img {
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	margin-right: 20px;
+}
+
+.sparkwifi_connect_ol li {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.plan-price {
+	font-size: 0.8em;
+}
+
+.accordion .accordion-header a {
+	padding: 30px 30px;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.accordion .accordion-header a i {
+	font-size: 25px;
+	padding-right: 40px;
+	color: #90c536;
+}
+.tp-caption {
+	letter-spacing: -1px;
+}
+
+.read-more-reversed {
+	color: #fff;
+	text-decoration: none;
+	display: inline-block;
+	border-bottom: 1px dotted #e3e3e3;
+}
+
+.read-more-blue {
+	color: #469fc2;
+	text-decoration: none;
+	display: inline-block;
+	border-bottom: 1px dotted #1b86b1;
+}
+
+.light-border {
+	border-top: 1px solid #989898;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.logo-grid {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-flow: row wrap;
+	gap: 40px;
+}
+
+@media (max-width: 991px) {
+	.logo-grid {
+		flex-flow: column wrap;
+		justify-content: center;
+	}
+
+	.logo-grid img {
+		height: 160px;
+		width: auto;
+	}
+}
+
+.logo-grid img {
+	height: 80px;
+	width: auto;
+}

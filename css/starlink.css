@@ -1,0 +1,93 @@
+.sl_clear{
+	clear: both;
+}
+.sl_section{
+	margin-bottom: 50px;
+}
+.sl_section1{
+	background: url(/images/starlink/v2/1.png);
+    background-repeat: repeat;
+    background-size: auto;
+	height: 700px;
+	background-repeat: no-repeat;
+	background-size: cover;
+	text-align: center;
+}
+.sl_section1 .text{
+	display: flex;
+	flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.sl_section1 h1{
+	color: white;
+	margin-bottom: 30px;
+	line-height: 50px;
+	font-family: 'Poppins';
+	font-size: 54px;
+	font-weight: 600;
+	text-shadow: 2px 2px 2px #000;
+}
+.sl_section1 p{
+	color: white;
+	line-height: 38px;
+	font-family: "Poppins";
+	font-size: 20px;
+	font-weight: 600;
+	text-shadow: 2px 2px 2px #000;
+}
+
+.sl_section_left .text{
+	float: left;
+	width: 50%;
+}
+.sl_section_left .img{
+	float: left;
+	width: 50%;
+	padding-left: 20px;
+	/*text-align: right;*/
+}
+.sl_section_left .img img{
+	width: 100%;
+}
+
+.sl_section_right .text{
+	float: left;
+	width: 50%;
+}
+.sl_section_right .img{
+	float: left;
+	width: 50%;
+	padding-right: 20px;
+	/*text-align: left;*/
+}
+.sl_section_right .img img{
+	width: 100%;
+}
+
+.buy-button {
+	border: 2px solid #9dcb4f;
+	background-color: #0077c8;
+	color: #ffffff;
+	border-radius: 5px;
+	padding: 10px 20px;
+	font-size: 16px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	clear: both;
+	margin-top: 10px;
+	display: inline-block;
+}
+.buy-button:hover {
+    background-color: #005a9e; /* Darker blue for hover effect */
+}
+.buy-button:focus,
+.buy-button:active {
+    outline: none;
+    background-color: #004882; /* Even darker blue for active state */
+}
+.buy-button:focus {
+    box-shadow: 0 0 0 3px rgba(0, 119, 200, 0.5); /* Highlight focus */
+}
