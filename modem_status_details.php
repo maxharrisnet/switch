@@ -120,24 +120,27 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     // $throughputUpload = json_encode($filteredUpload);
     // $throughputLabels = json_encode($labels);
 
-    // if (is_array($throughputData) && !empty($throughputData)) {
-    //   $throughputTimestamps = array_map(function ($entry) {
-    //     return date('H:i', $entry[0]); // Timestamp (Unix)
-    //     // return filterTimestamps($entry[0], 2);
-    //   }, $throughputData);
-    //   $throughputDownload = array_map(function ($entry) {
-    //     return $entry[1];  // Download throughput
-    //   }, $throughputData);
-    //   $throughputUpload = array_map(function ($entry) {
-    //     return $entry[2];  // Upload throughput
-    //   }, $throughputData);
-    // } else {
-    //   $throughputTimestamps = [];
-    //   $throughputDownload = [];
-    //   $throughputUpload = [];
-    // }
+    if (is_array($throughputData) && !empty($throughputData)) {
+      $throughputTimestamps = array_map(function ($entry) {
+        return date('H:i', $entry[0]); // Timestamp (Unix)
+        // return filterTimestamps($entry[0], 2);
+      }, $throughputData);
+      $throughputDownload = array_map(function ($entry) {
+        return $entry[1];  // Download throughput
+      }, $throughputData);
+      $throughputUpload = array_map(function ($entry) {
+        return $entry[2];  // Upload throughput
+      }, $throughputData);
+    } else {
+      $throughputTimestamps = [];
+      $throughputDownload = [];
+      $throughputUpload = [];
+    }
 
-    // print_r($throughputData);
+
+
+
+
 
     // Usage Data
     // Get the current date and time
@@ -170,18 +173,35 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       print_r('EMPTY V!'); //TODO: Improve this output message
     }
 
+
+
     // Obstruction Data
     $obstructionDataJson = json_encode($obstructionData);
 
+
+
     // Uptime Data
-    if (is_array($uptimeData) && !empty($uptimeData)) {
-      $uptime = end($uptimeData);
-      $uptimeTimestamp = date('M j, Y H:i', $uptime[0]);
-      $uptimeValue = $uptime[1];
-    } else {
-      $uptimeTimestamp = null;
-      $uptimeValue = null;
+    $uptimeLabels = [];
+    $uptimeValues = [];
+
+    foreach ($uptimeData as $dataPoint) {
+      $uptimeLabels[] = date('H:i', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
+      $uptimeValues[] = $dataPoint[1];         // Uptime value
     }
+
+    $uptimeLabelsJson = json_encode($uptimeLabels);
+    $uptimeValuesJson = json_encode($uptimeValues);
+
+    // print_r($uptimeData);
+    // // Uptime Data
+    // if (is_array($uptimeData) && !empty($uptimeData)) {
+    //   $uptime = end($uptimeData);
+    //   $uptimeTimestamp = date('M j, Y H:i', $uptime[0]);
+    //   $uptimeValue = $uptime[1];
+    // } else {
+    //   $uptimeTimestamp = null;
+    //   $uptimeValue = null;
+    // }
   }
 }
 ?>
@@ -306,7 +326,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         <div class="row py-4">
           <div class="card rounded shadow">
             <div class="card-body">
-              <h2 class="card-title h5">Latency</h2>
+              <h2 class="card-title h5">Latency/Ping Drop Rate</h2>
               <canvas id="latencyChart" width="400" height="100"></canvas>
             </div>
           </div>
@@ -345,7 +365,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     new Chart(throughputCtx, {
       type: 'line',
       data: {
-        labels: <?php echo $throughputTimestamps; ?>,
+        labels: <?php echo json_encode($throughputTimestamps); ?>,
         datasets: [{
           label: 'Download Throughput (Mbps)',
           data: <?php echo json_encode($throughputDownload); ?>,
@@ -360,7 +380,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
           }
         }, {
           label: 'Upload Throughput (Mbps)',
-          data: <?php echo $throughputUpload; ?>,
+          data: <?php echo json_encode($throughputUpload); ?>,
           borderColor: '#c5522b',
           borderCapStyle: 'round',
           borderWidth: 1,
@@ -521,13 +541,9 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
 
     // Uptime Chart
     document.addEventListener("DOMContentLoaded", function() {
-      // Uptime Chart
-      const uptime = [{
-        x: <?php echo json_encode($uptimeTimestamp); ?>,
-        y: <?php echo json_encode($uptimeValue); ?>
-      }];
 
-      const labels = <?php echo json_encode($uptimeTimestamp); ?>;
+      const uptimeLabels = <?php echo $uptimeLabelsJson; ?>;
+      const uptimeValues = <?php echo $uptimeValuesJson; ?>;
       const uptimeCtx = document.getElementById('uptimeChart').getContext('2d');
       const uptimeChart = new Chart(uptimeCtx, {
         type: 'line',
@@ -535,7 +551,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
           labels: labels,
           datasets: [{
             label: 'Uptime',
-            data: uptime,
+            data: uptimeValues,
             borderColor: '#3986a8',
             borderWidth: 1,
             fill: false
@@ -543,8 +559,22 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         },
         options: {
           scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time'
+              }
+            },
             y: {
-              beginAtZero: true
+              title: {
+                display: true,
+                text: 'Uptime (0 to 1)'
+              },
+              min: 0,
+              max: 1,
+              ticks: {
+                stepSize: 0.1
+              }
             }
           }
         }
