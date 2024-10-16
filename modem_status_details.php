@@ -63,11 +63,11 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
 
           return filterTimestamps($entry[0], 2);
         },
+
         $signalQualityData
       ));
 
       $signalTimestamps = array_values($signalTimestamps);
-
       $signalValues = array_map(
         function ($entry) {
           return $entry[1];  // Signal quality values
@@ -76,30 +76,74 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       );
     }
 
-    if (is_array($throughputData) && !empty($throughputData)) {
-      $throughputTimestamps = array_map(function ($entry) {
-        return date('H:i', $entry[0]);
-        // return filterTimestamps($entry[0], 2);
 
-      }, $throughputData);
-      $throughputDownload = array_map(function ($entry) {
-        return $entry[1];  // Download throughput
-      }, $throughputData);
-      $throughputUpload = array_map(function ($entry) {
-        return $entry[2];  // Upload throughput
-      }, $throughputData);
-    } else {
-      $throughputTimestamps = [];
-      $throughputDownload = [];
-      $throughputUpload = [];
-    }
+    // Throughtput Data
+
+    // Get the current time in Unix timestamp
+    $currentTimestamp = time();
+
+    // Calculate the timestamp for 24 hours ago
+    $twentyFourHoursAgo = $currentTimestamp - 86400;
+
+    // Arrays to hold filtered data for the last 24 hours
+    $filteredDates = [];
+    $filteredDownload = [];
+    $filteredUpload = [];
+    $labels = [];
+
+
+    // Loop through the throughput data and filter for the last 24 hours
+    // foreach ($throughputData as $entry) {
+    //   $timestamp = $entry[0];
+
+    //   // Only include data within the last 24 hours
+    //   if (
+    //     $timestamp >= $twentyFourHoursAgo && $timestamp <= $currentTimestamp
+    //   ) {
+    //     // Add all data points to the arrays
+    //     $filteredDates[] = $timestamp;
+    //     $filteredDownload[] = $entry[1];
+    //     $filteredUpload[] = $entry[2];
+
+    //     // Check if it's a multiple of 2 hours (7200 seconds)
+    //     if ($timestamp % 7200 === 0) {
+    //       $labels[] = date('H:i', $timestamp); // Label every 2 hours
+    //     } else {
+    //       $labels[] = ''; // Empty label for non-2-hour intervals
+    //     }
+    //   }
+    // }
+
+    // Prepare the data for Chart.js
+    // $throughputTimestamps = json_encode($filteredDates);
+    // $throughputDownload = json_encode($filteredDownload);
+    // $throughputUpload = json_encode($filteredUpload);
+    // $throughputLabels = json_encode($labels);
+
+    // if (is_array($throughputData) && !empty($throughputData)) {
+    //   $throughputTimestamps = array_map(function ($entry) {
+    //     return date('H:i', $entry[0]); // Timestamp (Unix)
+    //     // return filterTimestamps($entry[0], 2);
+    //   }, $throughputData);
+    //   $throughputDownload = array_map(function ($entry) {
+    //     return $entry[1];  // Download throughput
+    //   }, $throughputData);
+    //   $throughputUpload = array_map(function ($entry) {
+    //     return $entry[2];  // Upload throughput
+    //   }, $throughputData);
+    // } else {
+    //   $throughputTimestamps = [];
+    //   $throughputDownload = [];
+    //   $throughputUpload = [];
+    // }
+
+    // print_r($throughputData);
 
     // Usage Data
-
     // Get the current date and time
     $currentDate = new DateTime();
 
-    // Subtract 7 days to get the start of the range
+    // Subtract 10 days to get the start of the range
     $daysAgo = clone $currentDate;
     $daysAgo->modify('-10 days');
 
@@ -108,12 +152,6 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       $entryDate = new DateTime($entry['date']);
       return $entryDate >= $daysAgo && $entryDate <= $currentDate;
     });
-
-    // $weeklyUsageData = json_encode($weeklyUsageData);
-
-    // Output the filtered data
-    // print_r($weeklyUsageData);
-
 
     $usageLabels = [];
     $usagePriority = [];
@@ -239,7 +277,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
             <div class="card-body">
               <h2 class="card-title h5">Service Line Usage (<?php echo $modem['id']; ?>)</h2>
               <canvas id="usageChart" width="400" height="100"></canvas>
-              <span>Data usage tracking is not immediate and may be delayed by 24 hours or more. Counting shown is for informational purposes only and final overages reflected in monthly invoice are accurate.</span>
+              <span class="f6">Data usage tracking is not immediate and may be delayed by 24 hours or more. Counting shown is for informational purposes only and final overages reflected in monthly invoice are accurate.</span>
             </div>
           </div>
         </div>
@@ -307,7 +345,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     new Chart(throughputCtx, {
       type: 'line',
       data: {
-        labels: <?php echo json_encode($throughputTimestamps); ?>,
+        labels: <?php echo $throughputTimestamps; ?>,
         datasets: [{
           label: 'Download Throughput (Mbps)',
           data: <?php echo json_encode($throughputDownload); ?>,
@@ -322,7 +360,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
           }
         }, {
           label: 'Upload Throughput (Mbps)',
-          data: <?php echo json_encode($throughputUpload); ?>,
+          data: <?php echo $throughputUpload; ?>,
           borderColor: '#c5522b',
           borderCapStyle: 'round',
           borderWidth: 1,
@@ -376,10 +414,8 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     const usageLabels = <?php echo $usageLabelsJson; ?>;
     const usagePriority = <?php echo $usagePriorityJson; ?>;
     const usageUnlimited = <?php echo $usageUnlimitedJson; ?>;
-    console.log(usageUnlimited);
-
-    const ctx = document.getElementById('usageChart').getContext('2d');
-    const usageChart = new Chart(ctx, {
+    const usageCtx = document.getElementById('usageChart').getContext('2d');
+    const usageChart = new Chart(usageCtx, {
       type: 'bar',
       data: {
         labels: usageLabels,
