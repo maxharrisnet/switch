@@ -24,7 +24,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     die("No data available for modem $modemId");
   } else {
 
-    $gps = fetchGPS($provider, [$modemId], $accessToken);
+    // $gps = fetchGPS($provider, [$modemId], $accessToken);
 
     $latencyData = $modem['data']['latency']['data'] ?? [];
     $throughputData = $modem['data']['throughput']['data'] ?? [];
@@ -99,6 +99,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     $usagePriority = [];
     $usageUnlimited = [];
     if (is_array($usageData) && !empty($usageData)) {
+      print_r($usageData);
       foreach (array_slice($usageData, -7) as $day) {
         $usageLabels[] = date('M j', strtotime($day['date']));
         $usagePriority[] = $day['priority'] ?? 0;
@@ -408,6 +409,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     // Obstruction Chart
     // PHP passes the obstruction data to JavaScript
     const obstructionData = <?php echo $obstructionDataJson; ?>;
+    console.log(obstructionData);
 
     // Convert timestamps to readable dates for x-axis labels
     const labels = obstructionData.map(entry => {

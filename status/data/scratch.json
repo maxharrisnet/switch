@@ -1,0 +1,363 @@
+{
+    "sys_id": "fbfa95f51b5b651043054009b04bcb75",
+    "first_name": "Alison",
+    "last_name": "Jane",
+    "email": "alison.jane@switch.ca",
+    "avatar": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktcGVyc29uLWNpcmNsZSIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICA8cGF0aCBkPSJNMTEgNmEzIDMgMCAxIDEtNiAwIDMgMyAwIDAgMSA2IDB6Ii8+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMCA4YTggOCAwIDEgMSAxNiAwQTggOCAwIDAgMSAwIDh6bTgtN2E3IDcgMCAwIDAtNS40NjggMTEuMzdDMy4yNDIgMTEuMjI2IDQuODA1IDEwIDggMTBzNC43NTcgMS4yMjUgNS40NjggMi4zN0E3IDcgMCAwIDAgOCAxeiIvPgo8L3N2Zz4=",
+    "company_sys_id": "ab940aba9783e95064ba7f9e2153af0e"
+}
+
+{
+    "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+    "company_name": "Switch Canada",
+    "service_level": "Bronze",
+    "services": [
+        {
+            "name": "Switch Canada-KITP00283410",
+            "sys_id": "357fd2301b40d690dfe58449d34bcb0d",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283410",
+                    "sys_id": "e8622a741b80d690dfe58449d34bcb55",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00283410",
+                    "id": "KITP00283410",
+                    "h3Id": "8512a917fffffff",
+                    "lat": 54.90398657693621,
+                    "lon": -122.24673057598453,
+                    "gps_time": "2024-10-02T21:48:57Z"
+                }
+            ],
+            "mostRecentModem": {
+                "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283410",
+                "sys_id": "e8622a741b80d690dfe58449d34bcb55",
+                "type": "Starlink",
+                "op": "1",
+                "serial_number": "KITP00283410",
+                "id": "KITP00283410",
+                "h3Id": "8512a917fffffff",
+                "lat": 54.90398657693621,
+                "lon": -122.24673057598453,
+                "gps_time": "2024-10-02T21:48:57Z"
+            }
+        },
+        {
+            "name": "Switch Canada- Starlink Install KITP00283422",
+            "sys_id": "0fca12d11b909e9432e30d4cd34bcb02",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283422",
+                    "sys_id": "36e3a2b81b80d690dfe58449d34bcbe2",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00283422",
+                    "id": "KITP00283422",
+                    "h3Id": "8512a917fffffff",
+                    "lat": 54.90398657693621,
+                    "lon": -122.24673057598453,
+                    "gps_time": "2024-10-02T21:48:57Z"
+                }
+            ],
+            "mostRecentModem": {
+                "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283422",
+                "sys_id": "36e3a2b81b80d690dfe58449d34bcbe2",
+                "type": "Starlink",
+                "op": "1",
+                "serial_number": "KITP00283422",
+                "id": "KITP00283422",
+                "h3Id": "8512a917fffffff",
+                "lat": 54.90398657693621,
+                "lon": -122.24673057598453,
+                "gps_time": "2024-10-02T21:48:57Z"
+            }
+        },
+        {
+            "name": "Switch Canada-KITP00283423",
+            "sys_id": "f783dad51b985e9432e30d4cd34bcbb0",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283423",
+                    "sys_id": "2214a6b81b80d690dfe58449d34bcb41",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00283423",
+                    "id": "KITP00283423",
+                    "h3Id": "8512a917fffffff",
+                    "lat": 54.90398657693621,
+                    "lon": -122.24673057598453,
+                    "gps_time": "2024-10-02T21:48:57Z"
+                }
+            ],
+            "mostRecentModem": {
+                "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283423",
+                "sys_id": "2214a6b81b80d690dfe58449d34bcb41",
+                "type": "Starlink",
+                "op": "1",
+                "serial_number": "KITP00283423",
+                "id": "KITP00283423",
+                "h3Id": "8512a917fffffff",
+                "lat": 54.90398657693621,
+                "lon": -122.24673057598453,
+                "gps_time": "2024-10-02T21:48:57Z"
+            }
+        },
+        {
+            "name": "Switch Canada-KITP00283424",
+            "sys_id": "ddffdab81b40d690dfe58449d34bcb58",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283424",
+                    "sys_id": "4534a6b81b80d690dfe58449d34bcb51",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00283424",
+                    "id": "KITP00283424"
+                }
+            ]
+        },
+        {
+            "name": "Switch Canada-KITP00283425",
+            "sys_id": "63cf52781b40d690dfe58449d34bcb4f",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283425",
+                    "sys_id": "21546eb81b80d690dfe58449d34bcb36",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00283425",
+                    "id": "KITP00283425"
+                }
+            ]
+        },
+        {
+            "name": "Switch Canada-KITP00283426",
+            "sys_id": "55af16b41b40d690dfe58449d34bcb2d",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283426",
+                    "sys_id": "849426f81b80d690dfe58449d34bcb24",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00283426",
+                    "id": "KITP00283426",
+                    "h3Id": "8512a917fffffff",
+                    "lat": 54.90398657693621,
+                    "lon": -122.24673057598453,
+                    "gps_time": "2024-10-02T21:48:42Z"
+                }
+            ],
+            "mostRecentModem": {
+                "name": "Starlink Flat HP Kit - Land (Mobility)-KITP00283426",
+                "sys_id": "849426f81b80d690dfe58449d34bcb24",
+                "type": "Starlink",
+                "op": "1",
+                "serial_number": "KITP00283426",
+                "id": "KITP00283426",
+                "h3Id": "8512a917fffffff",
+                "lat": 54.90398657693621,
+                "lon": -122.24673057598453,
+                "gps_time": "2024-10-02T21:48:42Z"
+            }
+        },
+        {
+            "name": "Switch Canada- Starlink Install KITP00004171",
+            "sys_id": "d6c702fa97c3e95064ba7f9e2153af8b",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink HP Kit - Land-KITP00004171",
+                    "sys_id": "d42b46769707e95064ba7f9e2153af09",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00004171",
+                    "id": "KITP00004171",
+                    "h3Id": "8527b2cffffffff",
+                    "lat": 49.75466360745026,
+                    "lon": -111.14731619428824,
+                    "gps_time": "2024-10-02T21:48:42Z"
+                }
+            ],
+            "mostRecentModem": {
+                "name": "Starlink HP Kit - Land-KITP00004171",
+                "sys_id": "d42b46769707e95064ba7f9e2153af09",
+                "type": "Starlink",
+                "op": "1",
+                "serial_number": "KITP00004171",
+                "id": "KITP00004171",
+                "h3Id": "8527b2cffffffff",
+                "lat": 49.75466360745026,
+                "lon": -111.14731619428824,
+                "gps_time": "2024-10-02T21:48:42Z"
+            }
+        },
+        {
+            "name": "Switch Canada- Starlink Install KITP00033586",
+            "sys_id": "5248823e97c3e95064ba7f9e2153af41",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink HP Kit - Land-KITP00033586",
+                    "sys_id": "a75b42b69707e95064ba7f9e2153af7c",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00033586",
+                    "id": "KITP00033586"
+                }
+            ]
+        },
+        {
+            "name": "Switch Canada- Starklink Install KITP00033696",
+            "sys_id": "416902329707e95064ba7f9e2153afb8",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink HP Kit - Land-KITP00033696",
+                    "sys_id": "03ba06369707e95064ba7f9e2153af58",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00033696",
+                    "id": "KITP00033696"
+                }
+            ]
+        },
+        {
+            "name": "Switch Canada- Starlink Install KITP00046078",
+            "sys_id": "88668af297c3e95064ba7f9e2153afa0",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink HP Kit - Land-KITP00046078",
+                    "sys_id": "1ccb4e3a9707e95064ba7f9e2153af80",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00046078",
+                    "id": "KITP00046078"
+                }
+            ]
+        },
+        {
+            "name": "Switch Canada- Starlink Install KITP00054403",
+            "sys_id": "40a9c6329707e95064ba7f9e2153af3a",
+            "company": "Switch Canada",
+            "company_id": "ab940aba9783e95064ba7f9e2153af0e",
+            "category": "Unknown",
+            "subcategory": "",
+            "lat": "",
+            "lon": "",
+            "u_ibis_site_id_starlink": "",
+            "modems": [
+                {
+                    "name": "Starlink HP Kit - Land-KITP00054403",
+                    "sys_id": "beeb4eba9707e95064ba7f9e2153afd7",
+                    "type": "Starlink",
+                    "op": "1",
+                    "serial_number": "KITP00054403",
+                    "id": "KITP00054403",
+                    "h3Id": "85121a67fffffff",
+                    "lat": 55.04405674241909,
+                    "lon": -120.97864848515401,
+                    "gps_time": "2024-10-02T21:48:57Z"
+                }
+            ],
+            "mostRecentModem": {
+                "name": "Starlink HP Kit - Land-KITP00054403",
+                "sys_id": "beeb4eba9707e95064ba7f9e2153afd7",
+                "type": "Starlink",
+                "op": "1",
+                "serial_number": "KITP00054403",
+                "id": "KITP00054403",
+                "h3Id": "85121a67fffffff",
+                "lat": 55.04405674241909,
+                "lon": -120.97864848515401,
+                "gps_time": "2024-10-02T21:48:57Z"
+            }
+        }
+    ],
+    "modems": {
+        "iDirect": [],
+        "Newtec": [],
+        "OneWeb": [],
+        "UHP": [],
+        "Starlink": [
+            "Starlink Flat HP Kit - Land (Mobility)-KITP00283410",
+            "Starlink Flat HP Kit - Land (Mobility)-KITP00283422",
+            "Starlink Flat HP Kit - Land (Mobility)-KITP00283423",
+            "Starlink Flat HP Kit - Land (Mobility)-KITP00283424",
+            "Starlink Flat HP Kit - Land (Mobility)-KITP00283425",
+            "Starlink Flat HP Kit - Land (Mobility)-KITP00283426",
+            "Starlink HP Kit - Land-KITP00004171",
+            "Starlink HP Kit - Land-KITP00033586",
+            "Starlink HP Kit - Land-KITP00033696",
+            "Starlink HP Kit - Land-KITP00046078",
+            "Starlink HP Kit - Land-KITP00054403"
+        ]
+    }
+}
+

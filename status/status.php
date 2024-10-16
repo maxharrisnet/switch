@@ -3,7 +3,6 @@
   $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
   $dotenv->load();
 
-  // TODO: Fix this
   // API documentation: https://api-compass.speedcast.com/api-docs/
   // API authentication
   $apiUrl = 'https://api-compass.speedcast.com/v1/services'; // Correct API URL from docs
@@ -18,8 +17,8 @@
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-      'username' => 'alison.jane@switch.ca',
-      'password' => 'Sw!tch36'
+      'username' => $_ENV['COMPASS_API_USERNAME'],
+      'password' => $_ENV['COMPASS_API_PASSWORD']
     ]));
 
     $response = curl_exec($ch);
@@ -46,7 +45,7 @@
       case 'newtec':
         return "$baseUrl/newtecmodem/{$sysId}";
       case 'oneweb':
-        return "$baseUrl/oneweb/{$sysId}"; // TODO: Test, fix with terminalId (see docs)
+        return "$baseUrl/oneweb/{$sysId}";
       default:
         return null;
     }
@@ -86,6 +85,9 @@
       'Content-Type: application/json'
     ]);
 
+    // test env variables 
+    // print_r($_ENV['COMPASS_API_USERNAME']);
+
     // Execute and capture the response
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -103,7 +105,7 @@
   function fetchAllServices($accessToken)
   {
     $baseUrl = "https://api-compass.speedcast.com/v2.0";
-    $companyId = 'ab940aba9783e95064ba7f9e2153af0e'; // TODO: environment variable
+    $companyId = $_ENV['COMPASS_COMPANY_ID'];
     $url = "$baseUrl/company/$companyId";
 
     // Initialize the cURL session

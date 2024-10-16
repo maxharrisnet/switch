@@ -20,9 +20,10 @@
           <img src="status/switch-logo.png" alt="Switch Logo" class="img-fluid media">
         </div>
       </div>
+      <!-- Modem items start -->
       <?php
 
-      require "./status/status.php";
+      require "status/status.php";
 
       $allServices = fetchAllServices($accessToken);
       if (is_array($allServices) && !empty($allServices)) {
@@ -33,7 +34,7 @@
               $detailsURL = getServiceURL(strtolower($modem['type']), $sysId);
               $modemDetails = fetchModemDetails($detailsURL, $accessToken);
               echo "<div class='row p-2'>";
-              echo "<a href='http://localhost/switch/service_status_detail.php?provider=" . strtolower($modem['type']) . "&modemid={$modem['id']}' class='text-black text-decoration-none fw-bold'>";
+              echo "<a href='http://localhost/switch/modem_status_details.php?provider=" . strtolower($modem['type']) . "&modemid={$modem['id']}' class='text-black text-decoration-none fw-bold'>";
               echo "<div class='card modem-card shadow-sm mb-0' onmouseover=\"this.style.backgroundColor='#f8f9fa';\" onmouseout=\"this.style.backgroundColor='';\">";
               echo "<div class='card-body'>";
               echo "<div class='d-flex justify-content-between align-items-center'>";
