@@ -95,12 +95,31 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     }
 
     // Usage Data
+
+    // Get the current date and time
+    $currentDate = new DateTime();
+
+    // Subtract 7 days to get the start of the range
+    $daysAgo = clone $currentDate;
+    $daysAgo->modify('-10 days');
+
+    // Filter the data for entries within the last 7 days
+    $weeklyUsageData = array_filter($usageData, function ($entry) use ($daysAgo, $currentDate) {
+      $entryDate = new DateTime($entry['date']);
+      return $entryDate >= $daysAgo && $entryDate <= $currentDate;
+    });
+
+    // $weeklyUsageData = json_encode($weeklyUsageData);
+
+    // Output the filtered data
+    // print_r($weeklyUsageData);
+
+
     $usageLabels = [];
     $usagePriority = [];
     $usageUnlimited = [];
-    if (is_array($usageData) && !empty($usageData)) {
-      print_r($usageData);
-      foreach (array_slice($usageData, -7) as $day) {
+    if (is_array($weeklyUsageData) && !empty($weeklyUsageData)) {
+      foreach ($weeklyUsageData as $day) {
         $usageLabels[] = date('M j', strtotime($day['date']));
         $usagePriority[] = $day['priority'] ?? 0;
         $usageUnlimited[] = $day['unlimited'] ?? 0;
@@ -109,8 +128,11 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       $usageLabelsJson = json_encode($usageLabels);
       $usagePriorityJson = json_encode($usagePriority);
       $usageUnlimitedJson = json_encode($usageUnlimited);
+    } else {
+      print_r('EMPTY V!'); //TODO: Improve this output message
     }
 
+    // Obstruction Data
     $obstructionDataJson = json_encode($obstructionData);
 
     // Uptime Data
@@ -354,6 +376,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     const usageLabels = <?php echo $usageLabelsJson; ?>;
     const usagePriority = <?php echo $usagePriorityJson; ?>;
     const usageUnlimited = <?php echo $usageUnlimitedJson; ?>;
+    console.log(usageUnlimited);
 
     const ctx = document.getElementById('usageChart').getContext('2d');
     const usageChart = new Chart(ctx, {
@@ -361,10 +384,16 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       data: {
         labels: usageLabels,
         datasets: [{
-          label: 'Priority Usage',
-          backgroundColor: '#5baed9',
-          data: usagePriority
-        }, ]
+            label: 'Priority Usage',
+            backgroundColor: '#8bcff0',
+            data: usagePriority
+          },
+          {
+            label: 'Unlimited Usage',
+            backgroundColor: '#5baed9',
+            data: usageUnlimited
+          }
+        ]
       },
       options: {
         scales: {
@@ -409,7 +438,6 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     // Obstruction Chart
     // PHP passes the obstruction data to JavaScript
     const obstructionData = <?php echo $obstructionDataJson; ?>;
-    console.log(obstructionData);
 
     // Convert timestamps to readable dates for x-axis labels
     const labels = obstructionData.map(entry => {
