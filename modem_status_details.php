@@ -184,24 +184,15 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     $uptimeLabels = [];
     $uptimeValues = [];
 
+    $maxUptimeValue = max(array_column($uptimeData, 1));
+
     foreach ($uptimeData as $dataPoint) {
-      $uptimeLabels[] = date('H:i', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
-      $uptimeValues[] = $dataPoint[1];         // Uptime value
+      $uptimeLabels[] = date('Y-m-d H:i:s', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
+      $uptimeValues[] = ceil(($dataPoint[1] / 86400) * 10) / 10;
     }
 
     $uptimeLabelsJson = json_encode($uptimeLabels);
     $uptimeValuesJson = json_encode($uptimeValues);
-
-    // print_r($uptimeData);
-    // // Uptime Data
-    // if (is_array($uptimeData) && !empty($uptimeData)) {
-    //   $uptime = end($uptimeData);
-    //   $uptimeTimestamp = date('M j, Y H:i', $uptime[0]);
-    //   $uptimeValue = $uptime[1];
-    // } else {
-    //   $uptimeTimestamp = null;
-    //   $uptimeValue = null;
-    // }
   }
 }
 ?>
@@ -216,6 +207,8 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="status/status.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
   <!-- TODO: API Key variable -->
   <?php if ($gps): ?>
     <style>
@@ -503,7 +496,6 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
 
     // Extract obstruction percentages for y-axis data
     const dataPoints = obstructionData.map(entry => entry[1]);
-
     const obstructionCtx = document.getElementById('obstructionChart').getContext('2d');
     const obstructionChart = new Chart(obstructionCtx, {
       type: 'line',
@@ -541,39 +533,51 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
 
     // Uptime Chart
     document.addEventListener("DOMContentLoaded", function() {
-
       const uptimeLabels = <?php echo $uptimeLabelsJson; ?>;
       const uptimeValues = <?php echo $uptimeValuesJson; ?>;
       const uptimeCtx = document.getElementById('uptimeChart').getContext('2d');
       const uptimeChart = new Chart(uptimeCtx, {
         type: 'line',
         data: {
-          labels: labels,
+          labels: uptimeLabels,
           datasets: [{
             label: 'Uptime',
             data: uptimeValues,
             borderColor: '#3986a8',
             borderWidth: 1,
-            fill: false
+            stepped: true,
+            pointRadius: 0,
+            fill: {
+              target: 'origin',
+              above: '#8bcff0', // Lighter fill color
+              below: '#8bcff0' // And blue below the origin
+            },
           }]
         },
         options: {
           scales: {
             x: {
+              type: 'time',
+              time: {
+                unit: 'hour',
+                stepSize: 2,
+                min: uptimeLabels[0],
+                max: uptimeLabels[uptimeLabels.length - 1],
+                displayFormats: {
+                  hour: 'HH:mm',
+                },
+              },
               title: {
                 display: true,
                 text: 'Time'
               }
             },
             y: {
-              title: {
-                display: true,
-                text: 'Uptime (0 to 1)'
-              },
               min: 0,
-              max: 1,
+              max: 2,
+              beginAtZero: true,
               ticks: {
-                stepSize: 0.1
+                stepSize: 0.5
               }
             }
           }
