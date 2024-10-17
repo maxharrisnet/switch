@@ -13,7 +13,6 @@ if (empty($modemId) || empty($provider)) {
 if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
   echo $accessToken;
 } else {
-
   $modemDetailsURL =  getServiceURL($provider, $modemId);
   $modem = fetchModemDetails($modemDetailsURL, $accessToken);
 
@@ -24,8 +23,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     die("No data available for modem $modemId");
   } else {
 
-    // $gps = fetchGPS($provider, [$modemId], $accessToken);
-
+    // $gpsData = fetchGPS($provider, [$modemId], $accessToken);
     $latencyData = $modem['data']['latency']['data'] ?? [];
     $throughputData = $modem['data']['throughput']['data'] ?? [];
     $signalQualityData = $modem['data']['signal']['data'] ?? [];
@@ -33,34 +31,36 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     $usageData = $modem['usage'] ?? [];
     $uptimeData = $modem['data']['uptime']['data'] ?? [];
 
-    // Extract timestamps and values for latency and throughput
-    $latencyTimestamps = [];
-    $latencyValues = [];
 
-    if (is_array($latencyData) && !empty($latencyData)) {
-      $latencyTimestamps = array_map(function ($entry) {
-        return date('H:i', $entry[0]); // Time formatting for Chart.js labels
-      }, $latencyData);
-      $latencyValues = array_map(function ($entry) {
-        return $entry[1];  // Latency values
-      }, $latencyData);
+    // @ Usage Data
+    $currentDate = new DateTime();
+    $usageDayOffset = clone $currentDate;
+    $usageDayOffset->modify('-10 days');
+
+    $weeklyUsageData = array_filter($usageData, function ($entry) use ($usageDayOffset, $currentDate) {
+      $entryDate = new DateTime($entry['date']);
+      return $entryDate >= $usageDayOffset && $entryDate <= $currentDate;
+    });
+
+    $usageLabels = [];
+    $usagePriority = [];
+    $usageUnlimited = [];
+    if (is_array($weeklyUsageData) && !empty($weeklyUsageData)) {
+      foreach ($weeklyUsageData as $day) {
+        $usageLabels[] = date('M j', strtotime($day['date']));
+        $usagePriority[] = $day['priority'] ?? 0;
+        $usageUnlimited[] = $day['unlimited'] ?? 0;
+      }
     }
 
-    // Signal Quality
+
+    // @ Signal Quality Data
     $signalTimestamps = [];
     $signalValues = [];
 
     if (is_array($signalQualityData) && !empty($signalQualityData)) {
       $signalTimestamps = array_filter(array_map(
         function ($entry) {
-          // $hours = date('H', $entry[0]);
-          // $minutes = date('i', $entry[0]);
-
-          // if ($minutes == 0 && $hours % 2 == 0) {
-          //   return date('H:i', $entry[0]);
-          // }
-          // return null;
-
           return filterTimestamps($entry[0], 2);
         },
 
@@ -76,54 +76,10 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       );
     }
 
-
-    // Throughtput Data
-
-    // Get the current time in Unix timestamp
-    $currentTimestamp = time();
-
-    // Calculate the timestamp for 24 hours ago
-    $twentyFourHoursAgo = $currentTimestamp - 86400;
-
-    // Arrays to hold filtered data for the last 24 hours
-    $filteredDates = [];
-    $filteredDownload = [];
-    $filteredUpload = [];
-    $labels = [];
-
-
-    // Loop through the throughput data and filter for the last 24 hours
-    // foreach ($throughputData as $entry) {
-    //   $timestamp = $entry[0];
-
-    //   // Only include data within the last 24 hours
-    //   if (
-    //     $timestamp >= $twentyFourHoursAgo && $timestamp <= $currentTimestamp
-    //   ) {
-    //     // Add all data points to the arrays
-    //     $filteredDates[] = $timestamp;
-    //     $filteredDownload[] = $entry[1];
-    //     $filteredUpload[] = $entry[2];
-
-    //     // Check if it's a multiple of 2 hours (7200 seconds)
-    //     if ($timestamp % 7200 === 0) {
-    //       $labels[] = date('H:i', $timestamp); // Label every 2 hours
-    //     } else {
-    //       $labels[] = ''; // Empty label for non-2-hour intervals
-    //     }
-    //   }
-    // }
-
-    // Prepare the data for Chart.js
-    // $throughputTimestamps = json_encode($filteredDates);
-    // $throughputDownload = json_encode($filteredDownload);
-    // $throughputUpload = json_encode($filteredUpload);
-    // $throughputLabels = json_encode($labels);
-
+    // @ Throughtput Data
     if (is_array($throughputData) && !empty($throughputData)) {
       $throughputTimestamps = array_map(function ($entry) {
         return date('H:i', $entry[0]); // Timestamp (Unix)
-        // return filterTimestamps($entry[0], 2);
       }, $throughputData);
       $throughputDownload = array_map(function ($entry) {
         return $entry[1];  // Download throughput
@@ -137,62 +93,33 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       $throughputUpload = [];
     }
 
+    // @ Latency Data
+    $latencyTimestamps = [];
+    $latencyValues = [];
 
-
-
-
-
-    // Usage Data
-    // Get the current date and time
-    $currentDate = new DateTime();
-
-    // Subtract 10 days to get the start of the range
-    $daysAgo = clone $currentDate;
-    $daysAgo->modify('-10 days');
-
-    // Filter the data for entries within the last 7 days
-    $weeklyUsageData = array_filter($usageData, function ($entry) use ($daysAgo, $currentDate) {
-      $entryDate = new DateTime($entry['date']);
-      return $entryDate >= $daysAgo && $entryDate <= $currentDate;
-    });
-
-    $usageLabels = [];
-    $usagePriority = [];
-    $usageUnlimited = [];
-    if (is_array($weeklyUsageData) && !empty($weeklyUsageData)) {
-      foreach ($weeklyUsageData as $day) {
-        $usageLabels[] = date('M j', strtotime($day['date']));
-        $usagePriority[] = $day['priority'] ?? 0;
-        $usageUnlimited[] = $day['unlimited'] ?? 0;
-      }
-      // Encode data as JSON for JavaScript usage
-      $usageLabelsJson = json_encode($usageLabels);
-      $usagePriorityJson = json_encode($usagePriority);
-      $usageUnlimitedJson = json_encode($usageUnlimited);
-    } else {
-      print_r('EMPTY V!'); //TODO: Improve this output message
+    if (is_array($latencyData) && !empty($latencyData)) {
+      $latencyTimestamps = array_map(function ($entry) {
+        return date('H:i', $entry[0]); // Time formatting for Chart.js labels
+      }, $latencyData);
+      $latencyValues = array_map(function ($entry) {
+        return $entry[1];  // Latency values
+      }, $latencyData);
     }
 
 
+    // @ Obstruction Data
+    $obstructionData = array_map(function ($entry) {
+      return [$entry[0], $entry[1] * 100];  // Convert to percentage
+    }, $obstructionData);
 
-    // Obstruction Data
-    $obstructionDataJson = json_encode($obstructionData);
 
-
-
-    // Uptime Data
+    // @ Uptime Data
     $uptimeLabels = [];
     $uptimeValues = [];
-
-    $maxUptimeValue = max(array_column($uptimeData, 1));
-
     foreach ($uptimeData as $dataPoint) {
       $uptimeLabels[] = date('Y-m-d H:i:s', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
       $uptimeValues[] = ceil(($dataPoint[1] / 86400) * 10) / 10;
     }
-
-    $uptimeLabelsJson = json_encode($uptimeLabels);
-    $uptimeValuesJson = json_encode($uptimeValues);
   }
 }
 ?>
@@ -431,23 +358,19 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     });
 
     // ~ Usage Chart
-    const usageLabels = <?php echo $usageLabelsJson; ?>;
-    const usagePriority = <?php echo $usagePriorityJson; ?>;
-    const usageUnlimited = <?php echo $usageUnlimitedJson; ?>;
-
     const usageCtx = document.getElementById('usageChart').getContext('2d');
     const usageChart = new Chart(usageCtx, {
       type: 'bar',
       data: {
-        labels: usageLabels,
+        labels: <?php echo json_encode($usageLabels); ?>,
         datasets: [{
             label: 'Priority Usage',
-            data: usagePriority
+            data: <?php echo json_encode($usagePriority); ?>
           },
           {
             label: 'Unlimited Usage',
             backgroundColor: '#5baed9',
-            data: usageUnlimited
+            data: <?php echo json_encode($usageUnlimited); ?>
           }
         ]
       },
@@ -502,8 +425,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     });
 
     // ~ Obstruction Chart
-    const obstructionData = <?php echo $obstructionDataJson; ?>;
-    // Convert timestamps to readable dates for x-axis labels
+    const obstructionData = <?php echo json_encode($obstructionData); ?>;
     const labels = obstructionData.map(entry => {
       const date = new Date(entry[0] * 1000);
       return date.toISOString().slice(0, 16).replace('T', ' ');
@@ -550,9 +472,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
 
     // ~ Uptime Chart
     document.addEventListener("DOMContentLoaded", function() {
-      const uptimeLabels = <?php echo $uptimeLabelsJson; ?>;
-      const uptimeValues = <?php echo $uptimeValuesJson; ?>;
-
+      const uptimeLabels = <?php echo json_encode($uptimeLabels); ?>;
       const uptimeCtx = document.getElementById('uptimeChart').getContext('2d');
       const uptimeChart = new Chart(uptimeCtx, {
         type: 'line',
@@ -560,7 +480,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
           labels: uptimeLabels,
           datasets: [{
             label: 'Uptime',
-            data: uptimeValues,
+            data: <?php echo json_encode($uptimeValues); ?>,
             stepped: true,
           }]
         },
