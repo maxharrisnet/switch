@@ -35,7 +35,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     // @ Usage Data
     $currentDate = new DateTime();
     $usageDayOffset = clone $currentDate;
-    $usageDayOffset->modify('-10 days');
+    $usageDayOffset->modify('-14 days');
 
     $weeklyUsageData = array_filter($usageData, function ($entry) use ($usageDayOffset, $currentDate) {
       $entryDate = new DateTime($entry['date']);
@@ -59,22 +59,18 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     $signalValues = [];
 
     if (is_array($signalQualityData) && !empty($signalQualityData)) {
-      $signalTimestamps = array_filter(array_map(
-        function ($entry) {
-          return filterTimestamps($entry[0], 2);
-        },
-
-        $signalQualityData
-      ));
-
+      $signalTimestamps = array_map(function ($entry) {
+        return date('H:i', $entry[0]); // Timestamp (Unix)
+      }, $signalQualityData);
       $signalTimestamps = array_values($signalTimestamps);
       $signalValues = array_map(
         function ($entry) {
-          return $entry[1];  // Signal quality values
+          return $entry[1];
         },
         $signalQualityData
       );
     }
+
 
     // @ Throughtput Data
     if (is_array($throughputData) && !empty($throughputData)) {
@@ -93,6 +89,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       $throughputUpload = [];
     }
 
+
     // @ Latency Data
     $latencyTimestamps = [];
     $latencyValues = [];
@@ -101,6 +98,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       $latencyTimestamps = array_map(function ($entry) {
         return date('H:i', $entry[0]); // Time formatting for Chart.js labels
       }, $latencyData);
+
       $latencyValues = array_map(function ($entry) {
         return $entry[1];  // Latency values
       }, $latencyData);
@@ -113,15 +111,50 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     }, $obstructionData);
 
 
+
     // @ Uptime Data
     $uptimeLabels = [];
     $uptimeValues = [];
     foreach ($uptimeData as $dataPoint) {
-      $uptimeLabels[] = date('Y-m-d H:i:s', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
+      $uptimeLabels[] = date('H:i', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
       $uptimeValues[] = ceil(($dataPoint[1] / 86400) * 10) / 10;
     }
   }
 }
+
+// Helper functions
+function filterTimestampHours($dataPoints)
+{
+  $filteredLabels = [];
+  $previousHour = null;
+
+  foreach ($dataPoints as $dataPoint) {
+    $currentHour = date('H', $dataPoint[0]);
+    if ($previousHour === null || ($currentHour % 2 == 0 && $currentHour != $previousHour)) {
+      $filteredLabels[] = date('H:i', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
+      $previousHour = $currentHour;
+    }
+  }
+
+  return $filteredLabels;
+}
+
+// Helper function to filter Unix timestamps and return only those that fall on even hours
+function filterEvenHourTimestamps(array $dataPoints)
+{
+  $filteredData = [];
+
+  foreach ($dataPoints as $dataPoint) {
+    $timestamp = $dataPoint[0];
+    $hour = date('H', $timestamp);
+    if ($hour % 2 === 0 && date('i', $timestamp) == '00') {
+      $filteredData[] = $dataPoint;
+    }
+  }
+
+  return $filteredData;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -161,7 +194,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
               <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z" />
             </svg>
           </a>
-          <?php if ($modem) : ?>
+          <?php if ($modem['id']) : ?>
             <h1 class="h5 mb-0 font-weight-bolder"><?= $modem['id']; ?> Modem Status</h1>
           <?php else : ?>
             <h1 class="h5 mb-0 font-weight-bolder">Modem Status</h1>
@@ -280,6 +313,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
   <?php include('status/loading.php'); ?>
   <script>
     // Global Chart Configuration
+    Chart.defaults.plugins.legend.display = false;
     Chart.defaults.plugins.legend.position = 'bottom';
     Chart.defaults.elements.point.radius = 0;
     Chart.defaults.elements.point.hoverRadius = 5;
@@ -292,12 +326,87 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     Chart.defaults.elements.bar.borderWidth = 1;
 
     // Line Charts
+    Chart.defaults.elements.line.hitRadius = 15;
+    Chart.defaults.elements.line.pointRadius = 0;
     Chart.defaults.elements.line.borderCapStyle = 'round';
     Chart.defaults.elements.line.borderColor = '#3986a8';
     Chart.defaults.elements.line.borderWidth = 1;
     Chart.defaults.elements.line.fill = true;
     Chart.defaults.elements.line.fill.target = 'origin';
-    Chart.defaults.elements.line.pointRadius = 0;
+
+
+    // ~ Usage Chart
+    const usageCtx = document.getElementById('usageChart').getContext('2d');
+    const usageChart = new Chart(usageCtx, {
+      type: 'bar',
+      data: {
+        labels: <?php echo json_encode($usageLabels); ?>,
+        datasets: [{
+            label: 'Priority Usage',
+            data: <?php echo json_encode($usagePriority); ?>
+          },
+          {
+            label: 'Unlimited Usage',
+            backgroundColor: '#5baed9',
+            data: <?php echo json_encode($usageUnlimited); ?>
+          }
+        ]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return value + 'GB';
+              },
+              stepSize: 5,
+            },
+          }
+        },
+        plugins: {
+          subtitle: {
+            display: true,
+            position: 'bottom',
+            text: 'Data usage tracking is not immediate and may be delayed by 24 hours or more. Counting shown is for informational purposes only and final overages reflected in monthly invoice are accurate.'
+          },
+          legend: {
+            display: true,
+            position: 'bottom',
+          }
+        }
+      }
+    });
+
+
+    // ~ Signal Quality Chart
+    const signalCtx = document.getElementById('signalQualityChart').getContext('2d');
+    new Chart(signalCtx, {
+      type: 'line',
+      data: {
+        labels: <?php echo json_encode($signalTimestamps); ?>,
+        datasets: [{
+          label: 'Signal Quality (%)',
+          data: <?php echo json_encode($signalValues); ?>,
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              },
+              stepSize: 50,
+            },
+            beginAtZero: true,
+            min: 0,
+            max: 100
+          }
+        }
+      }
+    });
+
 
     // ~ Throughput Chart
     const throughputCtx = document.getElementById('throughputChart').getContext('2d');
@@ -322,81 +431,20 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
               callback: function(value) {
                 return value + 'Mbs';
               },
-              beginAtZero: true,
               stepSize: 5,
-            }
-          }
-        }
-      }
-    });
-
-    // ~ Signal Quality Chart
-    const signalCtx = document.getElementById('signalQualityChart').getContext('2d');
-    new Chart(signalCtx, {
-      type: 'line',
-      data: {
-        labels: <?php echo json_encode($signalTimestamps); ?>,
-        datasets: [{
-          label: 'Signal Quality (%)',
-          data: <?php echo json_encode($signalValues); ?>,
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            ticks: {
-              callback: function(value) {
-                return value + '%';
-              },
-              beginAtZero: true,
-              stepSize: 50,
-              max: 100
-            }
-          }
-        }
-      }
-    });
-
-    // ~ Usage Chart
-    const usageCtx = document.getElementById('usageChart').getContext('2d');
-    const usageChart = new Chart(usageCtx, {
-      type: 'bar',
-      data: {
-        labels: <?php echo json_encode($usageLabels); ?>,
-        datasets: [{
-            label: 'Priority Usage',
-            data: <?php echo json_encode($usagePriority); ?>
-          },
-          {
-            label: 'Unlimited Usage',
-            backgroundColor: '#5baed9',
-            data: <?php echo json_encode($usageUnlimited); ?>
-          }
-        ]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 0.05,
-              max: 1
             },
-            title: {
-              display: true,
-              text: 'Usage (GB)'
-            }
+            beginAtZero: true,
           }
         },
         plugins: {
-          subtitle: {
+          legend: {
             display: true,
             position: 'bottom',
-            text: 'Data usage tracking is not immediate and may be delayed by 24 hours or more. Counting shown is for informational purposes only and final overages reflected in monthly invoice are accurate.'
           }
         }
       }
     });
+
 
     // ~ Latency Chart
     const latencyCtx = document.getElementById('latencyChart').getContext('2d');
@@ -416,13 +464,14 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
               callback: function(value) {
                 return value + 'ms';
               },
-              beginAtZero: true,
               stepSize: 20,
-            }
+            },
+            beginAtZero: true,
           }
         }
       }
     });
+
 
     // ~ Obstruction Chart
     const obstructionData = <?php echo json_encode($obstructionData); ?>;
@@ -446,19 +495,14 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       options: {
         scales: {
           y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Obstruction (%)'
-            },
             ticks: {
               callback: function(value) {
                 return value + '%';
               },
-              startAtZero: true,
               stepSize: 50,
-              max: 100
             },
+            max: 100,
+            beginAtZero: true,
           },
           x: {
             title: {
@@ -469,6 +513,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         }
       }
     });
+
 
     // ~ Uptime Chart
     document.addEventListener("DOMContentLoaded", function() {
@@ -486,21 +531,8 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         },
         options: {
           scales: {
-            x: {
-              type: 'time',
-              time: {
-                unit: 'hour',
-                stepSize: 2,
-                min: uptimeLabels[0],
-                max: uptimeLabels[uptimeLabels.length - 1],
-                displayFormats: {
-                  hour: 'HH:mm',
-                },
-              },
-            },
             y: {
               min: 0,
-              max: 2,
               beginAtZero: true,
               ticks: {
                 stepSize: 0.5
