@@ -290,7 +290,6 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
             <div class="card-body">
               <h2 class="card-title h5">Service Line Usage (<?php echo $modem['id']; ?>)</h2>
               <canvas id="usageChart" width="400" height="100"></canvas>
-              <span class="f6">Data usage tracking is not immediate and may be delayed by 24 hours or more. Counting shown is for informational purposes only and final overages reflected in monthly invoice are accurate.</span>
             </div>
           </div>
         </div>
@@ -353,41 +352,58 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
   </div>
   <?php include('status/loading.php'); ?>
   <script>
-    // Throughput Chart
+    // Global Chart Configuration
+    Chart.defaults.plugins.legend.position = 'bottom';
+    Chart.defaults.elements.point.radius = 0;
+    Chart.defaults.elements.point.hoverRadius = 5;
+    Chart.defaults.elements.point.hoverBorderWidth = 1;
+    Chart.defaults.elements.point.backgroundColor = '#3986a8';
+    Chart.defaults.elements.point.borderColor = '#3986a8';
+
+    // Bar Charts
+    Chart.defaults.elements.bar.backgroundColor = '#3986a8';
+    Chart.defaults.elements.bar.borderWidth = 1;
+
+    // Line Charts
+    Chart.defaults.elements.line.borderCapStyle = 'round';
+    Chart.defaults.elements.line.borderColor = '#3986a8';
+    Chart.defaults.elements.line.borderWidth = 1;
+    Chart.defaults.elements.line.fill = true;
+    Chart.defaults.elements.line.fill.target = 'origin';
+    Chart.defaults.elements.line.pointRadius = 0;
+
+    // ~ Throughput Chart
     const throughputCtx = document.getElementById('throughputChart').getContext('2d');
     new Chart(throughputCtx, {
       type: 'line',
       data: {
         labels: <?php echo json_encode($throughputTimestamps); ?>,
         datasets: [{
-          label: 'Download Throughput (Mbps)',
-          data: <?php echo json_encode($throughputDownload); ?>,
-          borderCapStyle: 'round',
-          borderColor: '#3986a8', // Darker border color
-          borderWidth: 1,
-          pointRadius: 0, // Remove dots at each point
-          fill: {
-            target: 'origin',
-            above: '#8bcff0', // Lighter fill color
-            below: '#8bcff0' // And blue below the origin
+            label: 'Download Throughput (Mbps)',
+            data: <?php echo json_encode($throughputDownload); ?>,
+          },
+          {
+            label: 'Upload Throughput (Mbps)',
+            data: <?php echo json_encode($throughputUpload); ?>,
           }
-        }, {
-          label: 'Upload Throughput (Mbps)',
-          data: <?php echo json_encode($throughputUpload); ?>,
-          borderColor: '#c5522b',
-          borderCapStyle: 'round',
-          borderWidth: 1,
-          pointRadius: 0, // Remove dots at each point
-          fill: {
-            target: 'origin',
-            above: '#f69263', // Lighter fill color
-            below: '#f69263' // And blue below the origin
+        ]
+      },
+      options: {
+        scales: {
+          y: {
+            ticks: {
+              callback: function(value) {
+                return value + 'Mbs';
+              },
+              beginAtZero: true,
+              stepSize: 5,
+            }
           }
-        }]
+        }
       }
     });
 
-    // Signal Quality Chart
+    // ~ Signal Quality Chart
     const signalCtx = document.getElementById('signalQualityChart').getContext('2d');
     new Chart(signalCtx, {
       type: 'line',
@@ -396,37 +412,29 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         datasets: [{
           label: 'Signal Quality (%)',
           data: <?php echo json_encode($signalValues); ?>,
-          borderCapStyle: 'round',
-          borderColor: '#3986a8', // Darker border color
-          borderWidth: 1,
-          pointRadius: 0, // Remove dots at each point
-          fill: {
-            target: 'origin',
-            above: '#8bcff0', // Lighter fill color
-            below: '#8bcff0' // And blue below the origin
-          }
         }]
       },
       options: {
         scales: {
           y: {
-            beginAtZero: true,
             ticks: {
               callback: function(value) {
-                return value + '%'; // Add percentage sign to y-axis labels
+                return value + '%';
               },
-              stepSize: 50, // Set step size to 50
-              max: 100 // Set maximum value to 100
+              beginAtZero: true,
+              stepSize: 50,
+              max: 100
             }
           }
         }
       }
     });
 
-    // Usage Chart
+    // ~ Usage Chart
     const usageLabels = <?php echo $usageLabelsJson; ?>;
     const usagePriority = <?php echo $usagePriorityJson; ?>;
     const usageUnlimited = <?php echo $usageUnlimitedJson; ?>;
+
     const usageCtx = document.getElementById('usageChart').getContext('2d');
     const usageChart = new Chart(usageCtx, {
       type: 'bar',
@@ -434,7 +442,6 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         labels: usageLabels,
         datasets: [{
             label: 'Priority Usage',
-            backgroundColor: '#8bcff0',
             data: usagePriority
           },
           {
@@ -449,20 +456,26 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
           y: {
             beginAtZero: true,
             ticks: {
-              stepSize: 0.05, // Set step size to 20 MB (0.02 GB)
-              max: 1 // Set maximum value to 1 GB
+              stepSize: 0.05,
+              max: 1
             },
             title: {
-              // move the usage label one decimal over
               display: true,
               text: 'Usage (GB)'
             }
+          }
+        },
+        plugins: {
+          subtitle: {
+            display: true,
+            position: 'bottom',
+            text: 'Data usage tracking is not immediate and may be delayed by 24 hours or more. Counting shown is for informational purposes only and final overages reflected in monthly invoice are accurate.'
           }
         }
       }
     });
 
-    // Latency Chart
+    // ~ Latency Chart
     const latencyCtx = document.getElementById('latencyChart').getContext('2d');
     new Chart(latencyCtx, {
       type: 'line',
@@ -471,23 +484,25 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         datasets: [{
           label: 'Latency (ms)',
           data: <?php echo json_encode($latencyValues); ?>,
-          borderCapStyle: 'round',
-          borderColor: '#3986a8', // Darker border color
-          borderWidth: 1,
-          pointRadius: 0, // Remove dots at each point
-          fill: {
-            target: 'origin',
-            above: '#8bcff0', // Lighter fill color
-            below: '#5baed9' // And blue below the origin
-          }
         }]
+      },
+      options: {
+        scales: {
+          y: {
+            ticks: {
+              callback: function(value) {
+                return value + 'ms';
+              },
+              beginAtZero: true,
+              stepSize: 20,
+            }
+          }
+        }
       }
     });
 
-    // Obstruction Chart
-    // PHP passes the obstruction data to JavaScript
+    // ~ Obstruction Chart
     const obstructionData = <?php echo $obstructionDataJson; ?>;
-
     // Convert timestamps to readable dates for x-axis labels
     const labels = obstructionData.map(entry => {
       const date = new Date(entry[0] * 1000);
@@ -495,7 +510,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     });
 
     // Extract obstruction percentages for y-axis data
-    const dataPoints = obstructionData.map(entry => entry[1]);
+    const dataPoints = obstructionData.map(entry => (100 * entry[1]));
     const obstructionCtx = document.getElementById('obstructionChart').getContext('2d');
     const obstructionChart = new Chart(obstructionCtx, {
       type: 'line',
@@ -503,13 +518,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
         labels: labels, // Dates for x-axis
         datasets: [{
           label: 'Obstruction (%)',
-          data: dataPoints, // Obstruction percentages for y-axis
-          backgroundColor: '#8bcff0',
-          borderColor: '#3986a8',
-          borderCapStyle: 'round',
-          borderWidth: 1,
-          pointRadius: 0, // Remove dots at each point
-          fill: true
+          data: dataPoints,
         }]
       },
       options: {
@@ -519,7 +528,15 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
             title: {
               display: true,
               text: 'Obstruction (%)'
-            }
+            },
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              },
+              startAtZero: true,
+              stepSize: 50,
+              max: 100
+            },
           },
           x: {
             title: {
@@ -531,10 +548,11 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
       }
     });
 
-    // Uptime Chart
+    // ~ Uptime Chart
     document.addEventListener("DOMContentLoaded", function() {
       const uptimeLabels = <?php echo $uptimeLabelsJson; ?>;
       const uptimeValues = <?php echo $uptimeValuesJson; ?>;
+
       const uptimeCtx = document.getElementById('uptimeChart').getContext('2d');
       const uptimeChart = new Chart(uptimeCtx, {
         type: 'line',
@@ -543,15 +561,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
           datasets: [{
             label: 'Uptime',
             data: uptimeValues,
-            borderColor: '#3986a8',
-            borderWidth: 1,
             stepped: true,
-            pointRadius: 0,
-            fill: {
-              target: 'origin',
-              above: '#8bcff0', // Lighter fill color
-              below: '#8bcff0' // And blue below the origin
-            },
           }]
         },
         options: {
@@ -567,10 +577,6 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
                   hour: 'HH:mm',
                 },
               },
-              title: {
-                display: true,
-                text: 'Time'
-              }
             },
             y: {
               min: 0,
