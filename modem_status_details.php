@@ -45,6 +45,7 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
     $usageLabels = [];
     $usagePriority = [];
     $usageUnlimited = [];
+
     if (is_array($weeklyUsageData) && !empty($weeklyUsageData)) {
       foreach ($weeklyUsageData as $day) {
         $usageLabels[] = date('M j', strtotime($day['date']));
@@ -106,18 +107,27 @@ if (is_string($accessToken) && strpos($accessToken, 'Error') === 0) {
 
 
     // @ Obstruction Data
-    $obstructionData = array_map(function ($entry) {
-      return [$entry[0], $entry[1] * 100];  // Convert to percentage
-    }, $obstructionData);
+    $obstructionLabels = [];
+    $obstructionValues = [];
 
+    if (is_array($obstructionData) && !empty($obstructionData)) {
+      foreach ($obstructionData as $entry) {
+        $obstructionLabels[] = date('H:i', $entry[0]);  // Format the UNIX timestamp to date and time
+        $obstructionValues[] = $entry[1] * 100;  // Convert to percentage
+      }
+    }
 
 
     // @ Uptime Data
     $uptimeLabels = [];
     $uptimeValues = [];
-    foreach ($uptimeData as $dataPoint) {
-      $uptimeLabels[] = date('H:i', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
-      $uptimeValues[] = ceil(($dataPoint[1] / 86400) * 10) / 10;
+
+    if (is_array($uptimeData) && !empty($uptimeData)) {
+      foreach ($uptimeData as $dataPoint) {
+        // $uptimeLabels[] = date('H:i', $dataPoint[0]);  // Format the UNIX timestamp to time (hours:minutes)
+        $uptimeLabels[] = filterTimestampHours($uptimeData);
+        $uptimeValues[] = ceil(($dataPoint[1] / 86400) * 10) / 10;
+      }
     }
   }
 }
@@ -148,7 +158,7 @@ function filterEvenHourTimestamps(array $dataPoints)
     $timestamp = $dataPoint[0];
     $hour = date('H', $timestamp);
     if ($hour % 2 === 0 && date('i', $timestamp) == '00') {
-      $filteredData[] = $dataPoint;
+      $filteredData[] = date('H:i', $timestamp);
     }
   }
 
@@ -326,7 +336,7 @@ function filterEvenHourTimestamps(array $dataPoints)
     Chart.defaults.elements.bar.borderWidth = 1;
 
     // Line Charts
-    Chart.defaults.elements.line.hitRadius = 15;
+    Chart.defaults.elements.line.hitRadius = 15; // TODO: Check this 
     Chart.defaults.elements.line.pointRadius = 0;
     Chart.defaults.elements.line.borderCapStyle = 'round';
     Chart.defaults.elements.line.borderColor = '#3986a8';
@@ -474,22 +484,14 @@ function filterEvenHourTimestamps(array $dataPoints)
 
 
     // ~ Obstruction Chart
-    const obstructionData = <?php echo json_encode($obstructionData); ?>;
-    const labels = obstructionData.map(entry => {
-      const date = new Date(entry[0] * 1000);
-      return date.toISOString().slice(0, 16).replace('T', ' ');
-    });
-
-    // Extract obstruction percentages for y-axis data
-    const dataPoints = obstructionData.map(entry => (100 * entry[1]));
     const obstructionCtx = document.getElementById('obstructionChart').getContext('2d');
     const obstructionChart = new Chart(obstructionCtx, {
       type: 'line',
       data: {
-        labels: labels, // Dates for x-axis
+        labels: <?php echo json_encode($obstructionLabels); ?>, // Dates for x-axis
         datasets: [{
           label: 'Obstruction (%)',
-          data: dataPoints,
+          data: <?php echo json_encode($obstructionValues); ?>,
         }]
       },
       options: {
@@ -504,12 +506,6 @@ function filterEvenHourTimestamps(array $dataPoints)
             max: 100,
             beginAtZero: true,
           },
-          x: {
-            title: {
-              display: true,
-              text: 'Date/Time'
-            }
-          }
         }
       }
     });
